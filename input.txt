@@ -1,0 +1,4 @@
+Esto es un input de prueba
+tiene varias lineas
+y caracteres raros
+#####...####...###
