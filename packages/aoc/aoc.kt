@@ -17,7 +17,7 @@ internal fun load_input(filename: String): String {
         return buildString {
             memScoped {
                 val bufferSize = 4096
-                val buffer = allocArray<ByteVar>(bufferSize)
+                val buffer     = allocArray<ByteVar>(bufferSize)
                 while (fgets(buffer, bufferSize, file) != null) {
                     append(buffer.toKString())
                 }

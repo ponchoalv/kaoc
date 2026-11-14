@@ -4,7 +4,7 @@
 SOURCES := src/main.kt
 LIBS := packages/kotlinizer/kotlinizer.kt packages/aoc/aoc.kt
 
-all: build/app
+all: run
 
 clean:
 	rm -rf build
