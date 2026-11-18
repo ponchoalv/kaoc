@@ -37,4 +37,8 @@ $> YEAR=2018 DAY=19 make new
 $> YEAR=2018 DAY=19 make run/example
 ```
 
+### Usage of `git-crypt`
+
+Due to the impossibility of sharing our inputs we should encrypt them, I choose to do this with `git-crypt` as a filter. It is configured with may public key in this repo. Just change it in your case or completely remove it if you're not going to commit your input files.
+
 Have fun!
