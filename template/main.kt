@@ -23,7 +23,9 @@ fun solvePart2(filePath: String) {
 }
 
 fun main(args: Array<String>) {
-	println(args.joinToString())
+	if (args.isEmpty()) {
+        fail("Error: No input provided, please provide one.")
+    }
 	
 	val input = args.first()
 

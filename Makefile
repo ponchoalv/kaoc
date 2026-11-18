@@ -1,4 +1,4 @@
-.PHONY: all clean run
+.PHONY: all clean run new
 
 # CFLAGS := -Wall -Werror -std=c23 -g -nostdinc -nostdlib -ffreestanding
 SOURCES := src/main.kt
@@ -7,15 +7,27 @@ LIBS := packages/aoc/aoc.kt
 
 SESSION?=123
 YEAR?=2018
-DAY?=19
-CURRENT_FILE?=src/${YEAR}/${DAY}/main.kt
+DAY?=20
+DIRECTORY?=src/${YEAR}/${DAY}/
+CURRENT_FILE?=${DIRECTORY}main.kt
 
-all: run
+all: run/example
 
 download_input:
-	ifeq (,$(wildcard ./src/${YEAR}/${DAY}/input.txt))
-		curl -b "session=${SESSION}" "https://adventofcode.com/${YAER}/day/${DAY}/input" > src/${YEAR}/${DAY}/input.txt
-	endif
+	@if [ ! -f "src/${YEAR}/${DAY}/input.txt" ]; then \
+		mkdir -p "src/${YEAR}/${DAY}"; \
+		curl -s -b "session=${SESSION}" "https://adventofcode.com/${YEAR}/day/${DAY}/input" > "src/${YEAR}/${DAY}/input.txt"; \
+	fi
+
+new: download_input
+	@mkdir -p ${DIRECTORY}
+	@if [ ! -f "${DIRECTORY}main.kt" ]; then \
+		cp "template/main.kt" "${DIRECTORY}"; \
+		echo "Created ${DIRECTORY}main.kt from template."; \
+		touch ${DIRECTORY}input_example.txt; \
+	else \
+		echo "${DIRECTORY}main.kt already exists, skipping copy."; \
+	fi
 
 clean:
 	rm -rf build

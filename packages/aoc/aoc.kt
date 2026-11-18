@@ -1,5 +1,6 @@
 package aoc
 
+import kotlin.system.exitProcess
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArray
@@ -8,6 +9,8 @@ import kotlinx.cinterop.toKString
 import platform.posix.fclose
 import platform.posix.fgets
 import platform.posix.fopen
+import platform.posix.fprintf
+import platform.posix.stderr
 import kotlin.math.abs
 
 // read a file and store it in a memory buffer
@@ -47,6 +50,12 @@ fun readLines(filePath: String): List<String> {
         fclose(file)
     }
     return lines
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun fail(message: String, status: Int = 1): Nothing {
+    fprintf(stderr, "%s\n", message)
+    exitProcess(status)
 }
 
 data class Vec2(var x: Int = 0, var y: Int = 0)

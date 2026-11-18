@@ -1,6 +1,0 @@
-input.txt
-Another line here
-another line 1 21
-1123213
-213
-12312312312312321
