@@ -24,18 +24,18 @@ fun solvePart2(filePath: String) {
 
 fun main(args: Array<String>) {
 	if (args.isEmpty()) {
-        fail("Error: No input provided, please provide one.")
-    }
-	
+		fail("Error: No input provided, please provide one.")
+	}
+
 	val input = args.first()
 
 	val elapsedPart1 = measureTime {
-        solvePart1(input)
-    }
-    println("Part 1 took: $elapsedPart1")
-	
+		solvePart1(input)
+	}
+	println("Part 1 took: $elapsedPart1")
+
 	val elapsedPart2 = measureTime {
-        solvePart1(input)
-    }
-    println("Part 2 took: $elapsedPart2")
+		solvePart1(input)
+	}
+	println("Part 2 took: $elapsedPart2")
 }
