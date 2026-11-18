@@ -8,10 +8,11 @@ import kotlinx.cinterop.toKString
 import platform.posix.fclose
 import platform.posix.fgets
 import platform.posix.fopen
+import kotlin.math.abs
 
 // read a file and store it in a memory buffer
 @OptIn(ExperimentalForeignApi::class)
-internal fun load_input(filename: String): String {
+fun readAll(filename: String): String {
     val file = fopen(filename, "r") ?: error("cannot open file: $filename")
     try {
         return buildString {
@@ -28,6 +29,27 @@ internal fun load_input(filename: String): String {
     }
 }
 
-object Aoc {
-	fun loadInput(filename: String): String = load_input(filename)
+@OptIn(ExperimentalForeignApi::class)
+fun readLines(filePath: String): List<String> {
+    val file = fopen(filePath, "r") ?: error("Cannot open file: $filePath")
+    val lines = mutableListOf<String>()
+
+    try {
+        memScoped {
+            val bufferSize = 64 * 1024
+            val buffer = allocArray<ByteVar>(bufferSize)
+            while (true) {
+                val line = fgets(buffer, bufferSize, file)?.toKString() ?: break
+                lines.add(line.trimEnd('\r', '\n'))
+            }
+        }
+    } finally {
+        fclose(file)
+    }
+    return lines
 }
+
+data class Vec2(var x: Int = 0, var y: Int = 0)
+fun Vec2.manhatanDistnace(other: Vec2): Int = abs(x - other.x) + abs(y - other.y)
+operator fun Vec2.minus(other: Vec2): Vec2 = Vec2(x - other.x, y - other.y)
+operator fun Vec2.plus(other: Vec2): Vec2 = Vec2(x + other.x, y + other.y)
