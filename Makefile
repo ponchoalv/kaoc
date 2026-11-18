@@ -1,30 +1,49 @@
-.PHONY: all clean run
+.PHONY: all clean run new
 
 # CFLAGS := -Wall -Werror -std=c23 -g -nostdinc -nostdlib -ffreestanding
 SOURCES := src/main.kt
-LIBS := packages/kotlinizer/kotlinizer.kt packages/aoc/aoc.kt packages/greeter/greeter.kt
+#LIBS := packages/kotlinizer/kotlinizer.kt packages/aoc/aoc.kt packages/greeter/greeter.kt
+LIBS := packages/aoc/aoc.kt
 
-all: run
+SESSION?=123
+YEAR?=2018
+DAY?=20
+DIRECTORY?=src/${YEAR}/${DAY}/
+CURRENT_FILE?=${DIRECTORY}main.kt
+
+all: run/example
+
+download_input:
+	@if [ ! -f "src/${YEAR}/${DAY}/input.txt" ]; then \
+		mkdir -p "src/${YEAR}/${DAY}"; \
+		curl -s -b "session=${SESSION}" "https://adventofcode.com/${YEAR}/day/${DAY}/input" > "src/${YEAR}/${DAY}/input.txt"; \
+	fi
+
+new: download_input
+	@mkdir -p ${DIRECTORY}
+	@if [ ! -f "${DIRECTORY}main.kt" ]; then \
+		cp "template/main.kt" "${DIRECTORY}"; \
+		echo "Created ${DIRECTORY}main.kt from template."; \
+		touch ${DIRECTORY}input_example.txt; \
+	else \
+		echo "${DIRECTORY}main.kt already exists, skipping copy."; \
+	fi
 
 clean:
 	rm -rf build
 
-run: build/app.kexe
-	./$<
-
-build/libgreeter.a: packages/greeter/greeter.c packages/greeter/greeter.h
+build/aoc.klib: $(LIBS)
 	@mkdir -p $(@D)
-	clang -c packages/greeter/greeter.c -o build/greeter.o
-	ar rcs $@ build/greeter.o
+	kotlinc-native $(LIBS) -p library -o $(basename $@)
 
-build/greeter.klib: build/libgreeter.a packages/greeter/greeter.def packages/greeter/greeter.h
+build/aoc_${YEAR}_${DAY}.kexe: build/aoc.klib $(CURRENT_FILE)
 	@mkdir -p $(@D)
-	cinterop -def packages/greeter/greeter.def -o $(basename $@)
+	kotlinc-native $(CURRENT_FILE) -l $< -o $(basename $@)
 
-build/libs.klib: build/greeter.klib $(LIBS)
-	@mkdir -p $(@D)
-	kotlinc-native $(LIBS) -p library -l build/greeter.klib -o $(basename $@)
+build: build/aoc_${YEAR}_${DAY}.kexe
 
-build/app.kexe: build/libs.klib build/greeter.klib $(SOURCES)
-	@mkdir -p $(@D)
-	kotlinc-native $(SOURCES) -l $< -l build/greeter.klib -o $(basename $@)
+run/example: build/aoc_${YEAR}_${DAY}.kexe
+	./$< src/${YEAR}/${DAY}/input_example.txt
+
+run: build/aoc_${YEAR}_${DAY}.kexe
+	./$< src/${YEAR}/${DAY}/input.txt
