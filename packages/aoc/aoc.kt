@@ -58,7 +58,18 @@ fun fail(message: String, status: Int = 1): Nothing {
     exitProcess(status)
 }
 
+// helpers para puntos
 data class Vec2(var x: Int = 0, var y: Int = 0)
 fun Vec2.manhatanDistnace(other: Vec2): Int = abs(x - other.x) + abs(y - other.y)
 operator fun Vec2.minus(other: Vec2): Vec2 = Vec2(x - other.x, y - other.y)
 operator fun Vec2.plus(other: Vec2): Vec2 = Vec2(x + other.x, y + other.y)
+
+// algunas cosas que pueden ser utiles para regex / parsing
+// Se puede usar con Regex(numero) y debería ser util para matchear numneros con decimal, 1232.23
+/*
+    val numberRegex = Regex(numero)
+    val match = numberRegex.matchEntire("23.45")
+    println(match?.groupValues?.joinToString())
+    $> 23.45
+*/
+val numero = """[+-]?\d+(?:\.\d+)?"""

@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
     println("Part 1 took: $elapsedPart1")
 
 	val elapsedPart2 = measureTime {
-        solvePart1(input)
+        solvePart2(input)
     }
     println("Part 2 took: $elapsedPart2")
 }
