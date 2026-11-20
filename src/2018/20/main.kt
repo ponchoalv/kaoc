@@ -1,41 +1,55 @@
 import aoc.*
 import kotlin.time.measureTime
 
-// 	we have this functions available
-//  val point1 = Vec2(3,4)
-// 	val point2 = Vec2(5,6)
+val movements = mapOf('N' to Vec2::up, 'S' to Vec2::down, 'E' to Vec2::right, 'W' to Vec2::left)
 
-// 	println("distance bewteen $point1 and $point2 is ${point1.manhatanDistnace(point2)}")
-// 	println("$point1 + $point2 ${point1 + point2}")
-// 	println("$point1 - $point2 ${point1 - point2}")
-
-fun solvePart1(filePath: String) {
-	// Read Input to a block of String
-	val input = readAll(filePath)
-
-	println("part 1 result: ${input}")
+fun buildGrid(regex: String): Map<Vec2, Int> {
+	var current = Vec2(0,0)
+    val stack = ArrayDeque<Vec2>();
+    val grid = mutableMapOf(current to 0);
+    
+    regex.forEach {
+        when(it) {
+            '(' -> stack.addLast(current)
+            ')' -> current = stack.removeLast()
+            '|' -> current = stack.last()
+            in "NSWE" -> {
+            	grid[current]?.let { distance ->
+            	   current = movements[it]?.invoke(current)!!
+            	   grid[current] = if (current in grid) minOf(distance + 1, grid[current]!!) else distance + 1
+                }
+            }
+        }
+    }
+    return grid
 }
 
-fun solvePart2(filePath: String) {
-	// Read Input in lines
-	val lines = readLines(filePath)
-	println("part 2 result ${lines.joinToString()}")
+fun solveDay(filePath: String) {
+    // Read Input to a block of String
+    val input = readAll(filePath)
+   	val grid = buildGrid(input)
+    var part1 = 0
+    var part2 = 0
+
+    grid.values.forEach {
+        if (it > part1) part1 = it
+        if (it >= 1000) part2++
+    }
+    println("part 1 result: $part1")
+    println("part 2 result: $part2")
 }
+
 
 fun main(args: Array<String>) {
-	if (args.isEmpty()) {
-		fail("Error: No input provided, please provide one.")
-	}
+    if (args.isEmpty()) {
+        fail("Error: No input provided, please provide one.")
+    }
 
-	val input = args.first()
+    val input = args.first()
 
-	val elapsedPart1 = measureTime {
-		solvePart1(input)
-	}
-	println("Part 1 took: $elapsedPart1")
+    val timeElapsed = measureTime {
+        solveDay(input)
+    }
+    println("solution took: $timeElapsed")
 
-	val elapsedPart2 = measureTime {
-		solvePart1(input)
-	}
-	println("Part 2 took: $elapsedPart2")
 }
