@@ -7,7 +7,7 @@ fun buildGrid(regex: String): Map<Vec2, Int> {
 	var current = Vec2(0,0)
     val stack = ArrayDeque<Vec2>();
     val grid = mutableMapOf(current to 0);
-    
+
     regex.forEach {
         when(it) {
             '(' -> stack.addLast(current)
@@ -51,5 +51,4 @@ fun main(args: Array<String>) {
         solveDay(input)
     }
     println("solution took: $timeElapsed")
-
 }
