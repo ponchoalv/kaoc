@@ -5,7 +5,7 @@ import kotlin.time.measureTime
 //  val point1 = Vec2(3,4)
 // 	val point2 = Vec2(5,6)
 
-// 	println("distance bewteen $point1 and $point2 is ${point1.manhatanDistnace(point2)}")
+// 	println("distance bewteen $point1 and $point2 is ${point1.distanceTo(point2)}")
 // 	println("$point1 + $point2 ${point1 + point2}")
 // 	println("$point1 - $point2 ${point1 - point2}")
 

@@ -1,5 +1,6 @@
 package aoc
 
+import kotlin.math.abs
 import kotlin.system.exitProcess
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -11,7 +12,6 @@ import platform.posix.fgets
 import platform.posix.fopen
 import platform.posix.fprintf
 import platform.posix.stderr
-import kotlin.math.abs
 
 // read a file and store it in a memory buffer
 @OptIn(ExperimentalForeignApi::class)
@@ -21,7 +21,7 @@ fun readAll(filename: String): String {
         return buildString {
             memScoped {
                 val bufferSize = 4096
-                val buffer     = allocArray<ByteVar>(bufferSize)
+                val buffer = allocArray<ByteVar>(bufferSize)
                 while (fgets(buffer, bufferSize, file) != null) {
                     append(buffer.toKString())
                 }
@@ -59,10 +59,59 @@ fun fail(message: String, status: Int = 1): Nothing {
 }
 
 // helpers para puntos
-data class Vec2(var x: Int = 0, var y: Int = 0)
-fun Vec2.manhatanDistnace(other: Vec2): Int = abs(x - other.x) + abs(y - other.y)
-operator fun Vec2.minus(other: Vec2): Vec2 = Vec2(x - other.x, y - other.y)
-operator fun Vec2.plus(other: Vec2): Vec2 = Vec2(x + other.x, y + other.y)
+data class Vec2(val x: Int, val y: Int) : Comparable<Vec2> {
+
+    fun distanceTo(otherX: Int, otherY: Int): Int = abs(x - otherX) + abs(y - otherY)
+
+    fun distanceTo(other: Vec2): Int = distanceTo(other.x, other.y)
+
+    operator fun minus(other: Vec2): Vec2 = Vec2(x - other.x, y - other.y)
+
+    operator fun plus(other: Vec2): Vec2 = Vec2(x + other.x, y + other.y)
+
+    val up by lazy { Vec2(x, y - 1) }
+    val down by lazy { Vec2(x, y + 1) }
+    val left by lazy { Vec2(x - 1, y) }
+    val right by lazy { Vec2(x + 1, y) }
+
+    fun cardinalNeighbors(allowNegative: Boolean = true): List<Vec2> =
+        listOf(
+                Vec2(x, y - 1),
+                Vec2(x - 1, y),
+                Vec2(x + 1, y),
+                Vec2(x, y + 1),
+            )
+            .filter { allowNegative || it.x >= 0 && it.y >= 0 }
+
+    fun neighbors(allowNegative: Boolean = true): List<Vec2> =
+        listOf(
+                Vec2(x - 1, y - 1),
+                Vec2(x, y - 1),
+                Vec2(x + 1, y - 1),
+                Vec2(x - 1, y),
+                Vec2(x + 1, y),
+                Vec2(x - 1, y + 1),
+                Vec2(x, y + 1),
+                Vec2(x + 1, y + 1),
+            )
+            .filter { allowNegative || it.x >= 0 && it.y >= 0 }
+
+    override fun compareTo(other: Vec2): Int =
+        when {
+            y < other.y -> -1
+            y > other.y -> 1
+            x < other.x -> -1
+            x > other.x -> 1
+            else -> 0
+        }
+
+    companion object {
+        val origin = Vec2(0, 0)
+
+        fun of(input: String): Vec2 =
+            input.split(",").map { it.trim().toInt() }.run { Vec2(this[0], this[1]) }
+    }
+}
 
 // algunas cosas que pueden ser utiles para regex / parsing
 // Se puede usar con Regex(numero) y debería ser util para matchear numneros con decimal, 1232.23
@@ -136,6 +185,7 @@ fun <N> dfsTailrec(start: N, neighbors: (N) -> Iterable<N>): Set<N> {
 // Heap mínimo para Kotlin/Native: compara costos, no nodos.
 private class MinHeap<N> {
     private val items = mutableListOf<Pair<N, Long>>()
+
     fun isNotEmpty() = items.isNotEmpty()
 
     fun push(entry: Pair<N, Long>) {
