@@ -1,7 +1,19 @@
 import aoc.*
 import kotlin.time.measureTime
 
-val movements = mapOf('N' to Vec2::up, 'S' to Vec2::down, 'E' to Vec2::right, 'W' to Vec2::left)
+val movements = arrayOf(Vec2::up,Vec2::down,Vec2::right,Vec2::left)
+
+fun getMoveIdx(coord: Char) : Int
+{
+    return when(coord) {
+        'N' -> 0;
+        'S' -> 1;
+        'W' -> 2;
+        'E' -> 3;
+        else -> -1;
+    }
+}
+
 
 fun buildGrid(regex: String): Map<Vec2, Int> {
 	var current = Vec2(0,0)
@@ -15,7 +27,7 @@ fun buildGrid(regex: String): Map<Vec2, Int> {
             '|' -> current = stack.last()
             in "NSWE" -> {
             	grid[current]?.let { distance ->
-            	   current = movements[it]?.invoke(current)!!
+            	   current = movements[getMoveIdx(it)].invoke(current)
             	   grid[current] = if (current in grid) minOf(distance + 1, grid[current]!!) else distance + 1
                 }
             }

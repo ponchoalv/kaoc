@@ -69,10 +69,10 @@ data class Vec2(val x: Int, val y: Int) : Comparable<Vec2> {
 
     operator fun plus(other: Vec2): Vec2 = Vec2(x + other.x, y + other.y)
 
-    val up by lazy { Vec2(x, y - 1) }
-    val down by lazy { Vec2(x, y + 1) }
-    val left by lazy { Vec2(x - 1, y) }
-    val right by lazy { Vec2(x + 1, y) }
+    inline fun up()    = Vec2(x, y - 1)
+    inline fun down()  = Vec2(x, y + 1)
+    inline fun left()  = Vec2(x - 1, y)
+    inline fun right() = Vec2(x + 1, y)
 
     fun cardinalNeighbors(allowNegative: Boolean = true): List<Vec2> =
         listOf(
